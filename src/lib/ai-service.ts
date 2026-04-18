@@ -79,13 +79,17 @@ export async function generateDetailedPlan(
   goal: string,
   constraints: string
 ): Promise<DetailedPlanResult> {
+  // Add random seed to force different output each time
+  const uniqueSeed = Date.now();
+  
   const prompt = EXISTENCE_DETAILED_PLAN_PROMPT
     .replace('{pathType}', pathType)
     .replace('{situation}', situation)
     .replace('{goal}', goal)
-    .replace('{constraints}', constraints || 'None provided');
+    .replace('{constraints}', constraints || 'None provided')
+    + `\n\nUnique Session ID: EB-${uniqueSeed} (generate completely new plan based on this ID)`;
 
-  return executeTask<DetailedPlanResult>(
+  return executePrecisionTask<DetailedPlanResult>(
     prompt, 
     'Detailed Execution Roadmap', 
     situation, 
@@ -93,6 +97,68 @@ export async function generateDetailedPlan(
     constraints, 
     (s, g, c) => generateTemplateDetailedPlan(pathType, s, g, c)
   );
+}
+
+/**
+ * Enhanced execution wrapper for high-precision tasks.
+ * Attempts multiple providers in parallel and selects the most detailed response.
+ */
+async function executePrecisionTask<T>(
+  prompt: string, 
+  taskName: string,
+  situation: string,
+  goal: string,
+  constraints: string,
+  fallbackFn: (s: string, g: string, c: string) => T
+): Promise<T> {
+  console.log(`${taskName} Precision Sync: Engaging intelligence consensus...`);
+
+  const activeProviders = PROVIDERS.filter(p => p.key && p.key !== 'your-key' && p.key !== '');
+
+  if (activeProviders.length === 0) {
+    return fallbackFn(situation, goal, constraints);
+  }
+
+  try {
+    const results = await Promise.allSettled(
+      activeProviders.map(provider => tryProvider<T>(provider, prompt))
+    );
+
+    const successfulResults = results
+      .filter((r): r is PromiseFulfilledResult<{ data: T, provider: string }> => r.status === 'fulfilled')
+      .map(r => r.value);
+    
+    if (successfulResults.length > 0) {
+      // Sort results by detail/specificity
+      const sortedResults = successfulResults.sort((a, b) => {
+        const scoreA = countSpecifics(JSON.stringify(a.data));
+        const scoreB = countSpecifics(JSON.stringify(b.data));
+        return scoreB - scoreA;
+      });
+
+      const { data, provider } = sortedResults[0];
+      console.log(`${taskName} Consensus Reached: Selected high-fidelity logic from ${provider}`);
+      return data;
+    }
+
+    throw new Error('All high-precision providers failed.');
+  } catch (err) {
+    console.log(`[AI-Service] ${taskName} precision deviation. Engaging fallback.`);
+    return fallbackFn(situation, goal, constraints);
+  }
+}
+
+function countSpecifics(text: string): number {
+  const platforms = ['Coursera', 'LinkedIn', 'Indeed', 'Meetup', 'YouTube', 'Udemy', 'edX', 'Figma', 'Github', 'Notion', 'StackOverflow', 'DataCamp', 'Khan Academy'];
+  const hasPlatform = platforms.filter(p => text.toLowerCase().includes(p.toLowerCase())).length;
+  // Match durations (e.g., "90 mins", "2 hours")
+  const durations = (text.match(/\d+\s*(mins?|hours?|hrs?|minutes?)/gi) || []).length;
+  // Match metrics (e.g., "5 applications", "3 modules")
+  const metrics = (text.match(/\d+\s*(responses?|connections?|applications?|modules?|lessons?|emails?|contacts?)/gi) || []).length;
+  // Match specific times (e.g., "08:00 AM", "2:00 PM")
+  const times = (text.match(/\d{1,2}:\d{2}\s*(AM|PM)/gi) || []).length;
+  
+  return (hasPlatform * 3) + (durations * 2) + metrics + (times * 5);
 }
 
 /**

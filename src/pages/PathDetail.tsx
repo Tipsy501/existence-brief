@@ -35,6 +35,7 @@ export default function PathDetail() {
   const [status, setStatus] = useState<'loading' | 'processing' | 'finishing'>('loading');
   const [activeWeek, setActiveWeek] = useState(1);
   const [isNewGeneration, setIsNewGeneration] = useState(false);
+  const [briefContext, setBriefContext] = useState<any>(null);
 
   // Sync with cache
   useEffect(() => {
@@ -110,6 +111,7 @@ export default function PathDetail() {
           briefData?.constraints || 'Normal constraints'
         );
 
+        setBriefContext(briefData);
         setPlan(newPlan);
         setCache(newPlan);
 
@@ -131,6 +133,31 @@ export default function PathDetail() {
 
     loadPlan();
   }, [briefId, pathType, user, location.state]);
+
+  const handleRegenerate = async () => {
+    if (!briefId || !pathType || !briefContext) return;
+    
+    setLoading(true);
+    setStatus('processing');
+    try {
+      const newPlan = await generateDetailedPlan(
+        pathType,
+        briefContext.situation,
+        briefContext.goal,
+        briefContext.constraints
+      );
+      setPlan(newPlan);
+      setCache(newPlan);
+      
+      if (user) {
+        await updateBriefPlan(briefId, pathType, newPlan);
+      }
+    } catch (err) {
+      console.log('Regeneration deviation detected.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -194,9 +221,26 @@ export default function PathDetail() {
                   <h1 className="text-3xl md:text-4xl font-black text-slate-900 mb-4 leading-tight tracking-tighter">
                     Tactical 12-Week Roadmap
                   </h1>
+                  {briefContext?.goal && (
+                    <div className="mb-4 inline-flex items-center gap-2 px-3 py-1 bg-slate-900 text-white rounded-full text-[10px] font-bold uppercase tracking-widest">
+                      <Target size={12} className="text-indigo-400" /> Based on goal: {briefContext.goal}
+                    </div>
+                  )}
                   <p className="text-lg text-slate-600 max-w-3xl leading-relaxed font-medium">
                     {plan.summary}
                   </p>
+                  
+                  <div className="mt-6 flex flex-wrap items-center gap-4">
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg border border-emerald-100 text-[10px] font-black uppercase tracking-widest animate-pulse">
+                      <CheckCircle2 size={12} /> Plan generated uniquely for you
+                    </div>
+                    <button 
+                      onClick={handleRegenerate}
+                      className="text-[10px] font-black text-indigo-600 uppercase tracking-widest hover:text-indigo-700 transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-indigo-50"
+                    >
+                      <Zap size={12} /> Regenerate with different focus
+                    </button>
+                  </div>
                 </div>
               </div>
             </Card>

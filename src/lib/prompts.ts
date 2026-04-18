@@ -52,41 +52,63 @@ Constraints: {constraints}
 `;
 
 export const EXISTENCE_DETAILED_PLAN_PROMPT = `
-You are an elite Tactical Execution Officer. Create a strict 12-week execution plan for a {pathType} approach to achieve the following objective.
+You are an elite Strategic Execution Coach. Create a COMPLETELY UNIQUE, HIGH-PRECISION tactical plan for this specific individual.
 
-CONTEXT:
-Situation: {situation}
-Goal: {goal}
-Constraints: {constraints}
+MANDATORY RULES (VIOLATION = SYSTEM FAILURE):
+1. ZERO generic advice. Every single task must reference the user's specific Situation, Goal, and Constraints.
+2. If the user mentions a specific tool, location, skill, or budget [X], your plan MUST center around [X] details.
+3. No template phrases like "strategic deep work" or "tactical outreach". Use specific platform-based actions.
+4. Each of the 12 weeks must be distinct and progress towards the objective with measurable metrics.
 
-STRICT REQUIREMENTS:
-1. Return ONLY a valid JSON object.
-2. Plan must span exactly 12 weeks.
-3. Be specific and actionable. Use "must", "will", "by [date]". No "consider" or "maybe".
-4. Include specific times (e.g., "9:00 AM") and deadlines (e.g., "within 48 hours").
-5. Format: 
+USER CONTEXT:
+- Current Situation: "{situation}"
+- Goal: "{goal}"
+- Constraints: "{constraints}"
+- Path Type: "{pathType}"
+
+PERSONALIZATION PROTOCOL:
+
+Step 1 - Extract Specifics:
+- Industry/Niche: Use exact terminology found in input.
+- Location: If mentioned, include local resources (cities, specific meetups, local job boards).
+- Budget: If "no money", use ONLY free resources (YouTube, library, open-source). If "unlimited", suggest highest-tier coaching/tools.
+- Timeline: Match the 12-week roadmap to any deadlines mentioned.
+
+Step 2 - Generate Unique Resources:
+- Exact course names, specific book titles, exact LinkedIn search strings, and named local/virtual communities relevant to the Goal.
+
+Step 3 - High-Precision Daily Schedule:
+BAD: "08:00 AM: Strategic deep work"
+GOOD: "08:00 AM: Complete 'Python for Data Science' Module 3 on DataCamp (90 mins)"
+BAD: "02:00 PM: Network with professionals"
+GOOD: "02:00 PM: Send connection requests to 5 'Senior Data Analysts' at the specific industry mentioned using [User Input Goal] as the hook."
+
+UNIQUENESS CHECK:
+- If this plan could work for another person with the same goal, it is TOO GENERIC. Rewrite with user-specific specifics.
+- Every task must link back to one of the user's specific words.
+
+OUTPUT FORMAT (JSON ONLY):
 {
-  "summary": "2-sentence executive summary.",
+  "summary": "2-sentence executive summary focusing on the user's specific context.",
   "roadmap": [
     {
       "week": 1,
-      "theme": "Foundation & Setup",
-      "objectives": ["Obj 1", "Obj 2"],
+      "theme": "Custom theme name",
+      "objectives": ["Specific Obj 1", "Specific Obj 2"],
       "daily": {
-        "morning": "Specific action at 8:00 AM",
-        "afternoon": "Specific action at 2:00 PM",
-        "evening": "Review action at 8:00 PM"
+        "morning": "Platform-specific action (e.g., '08:00 AM: Log into LinkedIn...')",
+        "afternoon": "Specific action (e.g., '2:00 PM: Design hero section in Figma...')",
+        "evening": "Review/Metric (e.g., '8:00 PM: Verify 3 applications sent')"
       },
-      "milestone": "Measurable outcome by end of week",
-      "contingency": "If X fails, do Y"
-    },
-    ... (continue for all 12 weeks)
+      "milestone": "Exact measurable outcome",
+      "contingency": "Specific alternative based on user constraints"
+    }
   ],
-  "rituals": ["Habit 1", "Habit 2"],
+  "rituals": ["Uniquely named habits"],
   "risks": [
-    { "threat": "Risk name", "mitigation": "How to prevent/fix" }
+    { "threat": "Context-specific risk", "mitigation": "Targeted fix" }
   ],
-  "resources": ["Resource 1", "Resource 2"],
+  "resources": ["Specific Platform + Exact Course/Tool Name"],
   "accountability": "The specific metric or person for verification"
 }
 `;
