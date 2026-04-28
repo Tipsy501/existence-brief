@@ -3,6 +3,7 @@ import { createServer as createViteServer } from "vite";
 import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
+import helmet from "helmet";
 
 // Load environment variables
 dotenv.config();
@@ -15,6 +16,15 @@ const __dirname = path.dirname(__filename);
 async function startServer() {
   const app = express();
   const PORT = 3000;
+
+  // Security Headers
+  app.use(helmet({
+    contentSecurityPolicy: false, // Disable for dev environment compatibility if needed, or configure carefully
+    crossOriginEmbedderPolicy: false,
+    frameguard: {
+      action: 'sameorigin'
+    }
+  }));
 
   // Sitemap route
   app.get("/sitemap.xml", async (req, res) => {

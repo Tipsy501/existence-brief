@@ -1,7 +1,12 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useEffect, useState, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { User, Session } from '@supabase/supabase-js';
 import { updateProfile, getProfile, registerReferral } from '../lib/database';
+import { secureSave, secureLoad, clearEBStorage, logAuthEvent } from '../lib/security';
+
+const SESSION_MAX_AGE = 24 * 60 * 60 * 1000; // 24 hours
+const MAX_LOGIN_ATTEMPTS = 5;
+const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
 
 interface AuthContextType {
   user: User | null;
@@ -22,8 +27,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isGuest, setIsGuest] = useState(() => localStorage.getItem('existence_brief_guest') === 'true');
+  const [loginAttempts, setLoginAttempts] = useState<{ count: number, lastAttempt: number }>({ count: 0, lastAttempt: 0 });
+
+  const signOut = useCallback(async () => {
+    await logAuthEvent('manual_logout');
+    await supabase.auth.signOut();
+    setIsGuest(false);
+    clearEBStorage();
+  }, []);
 
   useEffect(() => {
+    // Check for session timeout
+    const checkSessionDuration = () => {
+      const loginTime = secureLoad('login_time');
+      if (loginTime && (Date.now() - loginTime > SESSION_MAX_AGE)) {
+        console.warn('Session expired - 24h limit reached');
+        signOut();
+      }
+    };
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -32,12 +54,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (user) {
         setIsGuest(false);
+        checkSessionDuration();
       }
       setLoading(false);
     });
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       const user = session?.user ?? null;
       setUser(user);
@@ -45,6 +68,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (user) {
         setIsGuest(false);
         localStorage.removeItem('existence_brief_guest');
+        
+        if (event === 'SIGNED_IN') {
+          secureSave('login_time', Date.now());
+          logAuthEvent('login_success');
+        }
 
         // Sync metadata to profile
         const metadata = user.user_metadata;
@@ -73,7 +101,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [signOut]);
 
   const signUp = async (email: string, password: string, metadata?: any) => {
     console.log('AuthContext: Initiating signUp for', email);
@@ -91,8 +119,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
       
       if (result.error) {
+        await logAuthEvent('signup_failure', { email, error: result.error.message });
         console.warn('AuthContext: signUp error', result.error.message);
       } else {
+        await logAuthEvent('signup_initiated', { email });
         console.log('AuthContext: signUp success');
       }
       
@@ -101,11 +131,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log('AuthContext: Unexpected signUp error', err);
       return { data: { user: null, session: null }, error: err };
     } finally {
-      setLoading(false); // Critical: Ensure loading is unset
+      setLoading(false);
     }
   };
 
   const signIn = async (email: string, password: string) => {
+    // Rate Limiting Check
+    const now = Date.now();
+    if (loginAttempts.count >= MAX_LOGIN_ATTEMPTS && (now - loginAttempts.lastAttempt < RATE_LIMIT_WINDOW)) {
+      const waitTime = Math.ceil((RATE_LIMIT_WINDOW - (now - loginAttempts.lastAttempt)) / 1000);
+      return { data: null, error: { message: `Too many login attempts. Please wait ${waitTime} seconds.` } };
+    }
+
     console.log('AuthContext: Initiating signIn for', email);
     try {
       if (!supabase) throw new Error('Supabase client not initialized');
@@ -113,8 +150,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const result = await supabase.auth.signInWithPassword({ email, password });
       
       if (result.error) {
+        setLoginAttempts(prev => ({ 
+          count: (now - prev.lastAttempt > RATE_LIMIT_WINDOW) ? 1 : prev.count + 1, 
+          lastAttempt: now 
+        }));
+        await logAuthEvent('login_failure', { email, error: result.error.message });
         console.warn('AuthContext: signIn error', result.error.message);
       } else {
+        setLoginAttempts({ count: 0, lastAttempt: 0 });
         console.log('AuthContext: signIn success');
       }
       
@@ -127,14 +170,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signOut = async () => {
-    await supabase.auth.signOut();
-    setIsGuest(false);
-    localStorage.removeItem('existence_brief_guest');
-  };
-
   const resetPassword = async (email: string) => {
     const result = await supabase.auth.resetPasswordForEmail(email);
+    await logAuthEvent('password_reset_requested', { email });
     return result;
   };
 

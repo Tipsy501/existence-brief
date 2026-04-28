@@ -29,6 +29,7 @@ import CookiePolicy from './pages/CookiePolicy';
 import NotFound from './pages/NotFound';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
+import InactivityHandler from './components/InactivityHandler';
 
 // Initialize Analytics (replace with actual ID when ready)
 initGA('G-XXXXXXXXXX');
@@ -41,6 +42,7 @@ export default function App() {
   return (
     <HelmetProvider>
       <AuthProvider>
+        <InactivityHandler />
         <Router>
           <ScrollToTop />
           <Layout>
