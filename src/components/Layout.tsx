@@ -4,7 +4,6 @@ import { Menu, X, Zap, LayoutDashboard, Home as HomeIcon, ChevronRight } from 'l
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../hooks/useAuth';
 import UserMenu from './UserMenu';
-import TestimonialPrompt from './TestimonialPrompt';
 import ErrorBoundary from './ErrorBoundary';
 import CookieBanner from './CookieBanner';
 import SocialShare from './SocialShare';
@@ -145,9 +144,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <span className="font-bold text-slate-900 text-xl tracking-tight">Existence Brief</span>
             </Link>
             <p className="text-slate-500 max-w-sm leading-relaxed text-sm">
-              AI-powered clarity for your life's biggest decisions. Built for those who 
-              refuse to leave their future to chance.
+              Free AI life planner | Career change tool | Goal setting app.
+              Built for those who refuse to leave their future to chance.
             </p>
+            <div className="pt-2">
+              <a href="mailto:topogabolekwe@gmail.com" className="text-sm font-bold text-indigo-600 hover:underline">topogabolekwe@gmail.com</a>
+            </div>
           </div>
           
           <div className="space-y-4">
@@ -155,8 +157,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <ul className="space-y-3 text-sm text-slate-600 underline-offset-4">
               <li><Link to="/" className="hover:underline">Home</Link></li>
               <li><Link to="/how-it-works" className="hover:underline">How it works</Link></li>
+              <li><Link to="/pricing" className="hover:underline">Pricing</Link></li>
               <li><Link to="/dashboard" className="hover:underline">Dashboard</Link></li>
-              <li><Link to="/brief" className="hover:underline">Brief Generator</Link></li>
             </ul>
           </div>
 
@@ -182,7 +184,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </footer>
       
       <CookieBanner />
-      <TestimonialPrompt />
     </div>
   );
 }

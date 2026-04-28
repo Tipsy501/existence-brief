@@ -120,10 +120,10 @@ export default function Brief() {
           <Card className="p-8 md:p-12 overflow-hidden" padding="none">
             <div className="p-8 md:p-12">
               <div className="mb-10 text-center">
-                <h1 className="text-3xl font-bold text-slate-900 mb-3 leading-tight tracking-tight">Initialize Analysis Session</h1>
+                <h1 className="text-3xl font-bold text-slate-900 mb-3 leading-tight tracking-tight">Get Your Life Plan</h1>
                 <p className="text-slate-500 text-sm max-w-md mx-auto leading-relaxed font-medium">
-                  The more raw data you provide, the higher the output signal. 
-                  Minimalist input for maximal strategic clarity.
+                  The more detail you give, the better your plan will be. 
+                  It only takes about 60 seconds.
                 </p>
               </div>
 
@@ -141,32 +141,32 @@ export default function Brief() {
 
                 <div className="space-y-6">
                   <Input
-                    label="01. Current Situation"
+                    label="What does your life look like right now?"
                     multiline
                     required
                     maxLength={500}
                     value={formData.situation}
                     onChange={(e) => setFormData({...formData, situation: e.target.value})}
-                    placeholder="Briefly describe your environment, friction points, and current momentum."
+                    placeholder="Example: I work 9-5 but want to start a business"
                   />
 
                   <Input
-                    label="02. The Objective"
+                    label="What is your main goal?"
                     multiline
                     required
                     maxLength={500}
                     value={formData.goal}
                     onChange={(e) => setFormData({...formData, goal: e.target.value})}
-                    placeholder="Strictly define what success looks like in 90 days."
+                    placeholder="Example: I want to transition to a career in tech"
                   />
 
                   <Input
-                    label="03. Constraints"
+                    label="What's stopping you? (optional)"
                     multiline
                     maxLength={500}
                     value={formData.constraints}
                     onChange={(e) => setFormData({...formData, constraints: e.target.value})}
-                    placeholder="Identify resource limits (time, capital, energy) or mental blocks."
+                    placeholder="Example: I have kids and limited time"
                   />
                 </div>
 
@@ -176,7 +176,7 @@ export default function Brief() {
                   fullWidth
                   className="py-5 text-lg font-bold mt-4"
                 >
-                  ENGINEER MY PATH
+                  START MY FREE PLAN
                   <Send size={20} className="ml-3" />
                 </Button>
               </form>

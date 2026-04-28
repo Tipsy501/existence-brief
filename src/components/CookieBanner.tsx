@@ -4,24 +4,20 @@ import { Shield, X } from 'lucide-react';
 import Button from './Button';
 
 export default function CookieBanner() {
-  const [isVisible, setIsVisible] = useState(false);
+  const [hasAccepted, setHasAccepted] = useState(() => {
+    return localStorage.getItem('cookiesAccepted') === 'true';
+  });
 
-  useEffect(() => {
-    const consent = localStorage.getItem('cookie-consent');
-    if (!consent) {
-      const timer = setTimeout(() => setIsVisible(true), 1500);
-      return () => clearTimeout(timer);
-    }
-  }, []);
-
-  const handleAccept = () => {
-    localStorage.setItem('cookie-consent', 'true');
-    setIsVisible(false);
+  const acceptCookies = () => {
+    localStorage.setItem('cookiesAccepted', 'true');
+    setHasAccepted(true);
   };
+
+  if (hasAccepted) return null;
 
   return (
     <AnimatePresence>
-      {isVisible && (
+      {!hasAccepted && (
         <motion.div
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -40,7 +36,7 @@ export default function CookieBanner() {
                 </p>
               </div>
               <button 
-                onClick={() => setIsVisible(false)}
+                onClick={() => setHasAccepted(true)}
                 className="text-slate-400 hover:text-slate-600 transition-colors"
                 aria-label="Close"
               >
@@ -49,7 +45,7 @@ export default function CookieBanner() {
             </div>
             
             <div className="flex gap-3">
-              <Button size="sm" fullWidth onClick={handleAccept} className="text-[10px] font-black uppercase tracking-widest py-3">
+              <Button size="sm" fullWidth onClick={acceptCookies} className="text-[10px] font-black uppercase tracking-widest py-3">
                 Synchronize & Accept
               </Button>
             </div>

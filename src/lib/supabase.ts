@@ -1,8 +1,18 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-const siteUrl = import.meta.env.VITE_SITE_URL || window.location.origin;
+const isNode = typeof process !== 'undefined' && process.versions && process.versions.node;
+
+const getEnv = (key: string) => {
+  if (isNode) {
+    return process.env[key];
+  }
+  // @ts-ignore - Vite specific
+  return import.meta.env ? import.meta.env[key] : null;
+};
+
+const supabaseUrl = getEnv('VITE_SUPABASE_URL');
+const supabaseKey = getEnv('VITE_SUPABASE_ANON_KEY');
+const siteUrl = getEnv('VITE_SITE_URL') || (typeof window !== 'undefined' ? window.location.origin : 'https://existencebrief.com');
 
 if (!supabaseUrl || !supabaseKey) {
   console.log('Supabase configuration deviation. Verify env variables.');

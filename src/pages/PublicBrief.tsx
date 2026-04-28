@@ -7,6 +7,8 @@ import PathCard from '../components/PathCard';
 import ActionPlan from '../components/ActionPlan';
 import Button from '../components/Button';
 import LoadingSpinner from '../components/LoadingSpinner';
+import SEOMeta from '../components/SEOMeta';
+import RelatedBriefs from '../components/RelatedBriefs';
 
 export default function PublicBrief() {
   const { briefId } = useParams();
@@ -27,24 +29,51 @@ export default function PublicBrief() {
 
   if (!brief) {
     return (
-      <div className="flex-1 bg-slate-50 flex flex-col items-center justify-center p-12 text-center">
-        <div className="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center text-slate-400 mb-6">
-          <ShieldCheck size={32} />
+      <>
+        <SEOMeta 
+          title="Access Denied" 
+          description="This brief is private or does not exist." 
+        />
+        <div className="flex-1 bg-slate-50 flex flex-col items-center justify-center p-12 text-center">
+          <div className="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center text-slate-400 mb-6">
+            <ShieldCheck size={32} />
+          </div>
+          <h2 className="text-2xl font-bold text-slate-900 mb-2">Access Denied</h2>
+          <p className="text-slate-500 max-w-xs mx-auto mb-8">
+            This brief is either private or does not exist in our strategic grid.
+          </p>
+          <Button to="/">Return to Control Center</Button>
         </div>
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">Access Denied</h2>
-        <p className="text-slate-500 max-w-xs mx-auto mb-8">
-          This brief is either private or does not exist in our strategic grid.
-        </p>
-        <Button to="/">Return to Control Center</Button>
-      </div>
+      </>
     );
   }
 
   const result = brief.result;
   const anonymizedName = brief.profiles?.full_name ? `${brief.profiles.full_name.split(' ')[0]}'s` : "A Strategist's";
+  const seoTitle = `${anonymizedName} Plan to ${brief.goal}`;
+  const seoDescription = `Strategic plan for ${brief.goal} with 3 paths and 90-day action plan.`;
+  
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": seoTitle,
+    "description": seoDescription,
+    "step": result.actionPlan.day30.map((step: string, i: number) => ({
+      "@type": "HowToStep",
+      "position": i + 1,
+      "text": step
+    }))
+  };
 
   return (
-    <div className="flex-1 bg-slate-50 py-12 md:py-20">
+    <>
+      <SEOMeta 
+        title={seoTitle} 
+        description={seoDescription}
+        url={`https://existencebrief.com/p/${briefId}`}
+        schema={schema}
+      />
+      <div className="flex-1 bg-slate-50 py-12 md:py-20">
       <div className="container-max">
         {/* Header Hero */}
         <section className="mb-12">
@@ -140,7 +169,10 @@ export default function PublicBrief() {
             <div className="mt-8 text-[10px] font-bold text-slate-400 uppercase tracking-[0.5em]">North Star focus</div>
           </div>
         </section>
+
+        <RelatedBriefs />
       </div>
     </div>
-  );
+  </>
+);
 }

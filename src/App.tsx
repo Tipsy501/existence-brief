@@ -1,5 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider } from './context/AuthContext';
+import { useEffect } from 'react';
+import { initGA, logPageView } from './lib/analytics';
 import ScrollToTop from './components/ScrollToTop';
 import Layout from './components/Layout';
 import AdBanner from './components/AdBanner';
@@ -13,8 +16,12 @@ import PathDetail from './pages/PathDetail';
 import Upgrade from './pages/Upgrade';
 import Pricing from './pages/Pricing';
 import PublicBrief from './pages/PublicBrief';
+import TopicPage from './pages/TopicPage';
+import BlogPost from './pages/BlogPost';
+import BlogList from './pages/BlogList';
 import ConfirmEmail from './pages/ConfirmEmail';
 import Admin from './pages/Admin';
+import AdminFeedback from './pages/AdminFeedback';
 import HowItWorks from './pages/HowItWorks';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
@@ -23,16 +30,24 @@ import NotFound from './pages/NotFound';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
 
+// Initialize Analytics (replace with actual ID when ready)
+initGA('G-XXXXXXXXXX');
+
 export default function App() {
+  useEffect(() => {
+    logPageView();
+  }, []);
+
   return (
-    <AuthProvider>
-      <Router>
-        <ScrollToTop />
-        <Layout>
-          <div className="container-max mt-4">
-            <AdBanner type="top" className="my-0" />
-          </div>
-          <Routes>
+    <HelmetProvider>
+      <AuthProvider>
+        <Router>
+          <ScrollToTop />
+          <Layout>
+            <div className="container-max mt-4">
+              <AdBanner position="top" className="my-0" />
+            </div>
+            <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/how-it-works" element={<HowItWorks />} />
             <Route path="/login" element={<Login />} />
@@ -43,7 +58,11 @@ export default function App() {
             <Route path="/cookie-policy" element={<CookiePolicy />} />
             <Route path="/confirm-email" element={<ConfirmEmail />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/admin/feedback" element={<AdminFeedback />} />
             <Route path="/p/:briefId" element={<ErrorBoundary><PublicBrief /></ErrorBoundary>} />
+            <Route path="/topics/:topic" element={<TopicPage />} />
+            <Route path="/blog" element={<BlogList />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
             <Route 
               path="/dashboard" 
               element={
@@ -109,5 +128,6 @@ export default function App() {
         </Layout>
       </Router>
     </AuthProvider>
-  );
+  </HelmetProvider>
+);
 }

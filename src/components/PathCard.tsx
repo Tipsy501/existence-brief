@@ -58,11 +58,17 @@ export default function PathCard({
         </div>
       )}
 
-      <div className="flex items-center gap-3 mb-4 mt-2">
+      <div className="flex items-center gap-3 mb-2 mt-2">
         <div className={`p-2 rounded-lg ${current.bg}`}>
           {current.icon}
         </div>
         <h3 className="text-lg font-bold text-slate-900 leading-tight">{title}</h3>
+      </div>
+
+      <div className="mb-4">
+        <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded text-[10px] font-black uppercase tracking-widest bg-${current.accent}-50 text-${current.accent}-600 border border-${current.accent}-100 shadow-sm`}>
+          {type === 'safe' ? '🐢 6-12 Months' : type === 'balanced' ? '⚡ 3-6 Months' : '🚀 30-90 Days'}
+        </span>
       </div>
 
       <p className="text-sm text-slate-600 mb-6 leading-relaxed flex-grow">

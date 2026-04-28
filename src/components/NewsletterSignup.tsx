@@ -26,10 +26,10 @@ export default function NewsletterSignup() {
         }
         setIsSuccess(true);
       } else {
-        setError(result.error || 'Failed to synchronize email.');
+        setError(result.error || 'Could not save your email. Please try again.');
       }
     } catch (err) {
-      setError('Strategic grid connection deviation. Please try again.');
+      setError('Something went wrong. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -43,10 +43,10 @@ export default function NewsletterSignup() {
             <Check size={24} />
           </div>
           <h3 className="text-xl font-bold text-white uppercase tracking-widest">
-            {warning ? 'Partial Sync' : 'Confirmation Required'}
+            {warning ? 'Almost there' : 'Check your inbox'}
           </h3>
           <p className="text-slate-400 text-sm font-medium">
-            {warning ? warning : 'Strategic intel detection sent. Unlock your subscription by clicking the confirmation link in your inbox.'}
+            {warning ? warning : 'Please click the link in your email to confirm your subscription.'}
           </p>
         </div>
       </Card>
@@ -60,9 +60,9 @@ export default function NewsletterSignup() {
       </div>
       
       <div className="relative z-10">
-        <h3 className="text-white font-black text-xl uppercase tracking-widest mb-2">Weekly Strategic Intel</h3>
+        <h3 className="text-white font-black text-xl mb-2">Weekly Life Plans</h3>
         <p className="text-slate-400 text-sm font-medium mb-6 leading-relaxed max-w-sm">
-          Receive one high-precision strategic tip every Monday morning. No filler. Just clarity.
+          Join 1,200+ people getting one simple life planning tip every Monday. No spam. Just clarity.
         </p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
@@ -78,7 +78,7 @@ export default function NewsletterSignup() {
             />
           </div>
           <Button type="submit" loading={isSubmitting} fullWidth className="gap-2">
-            Subscribe to Protocol
+            Get My Weekly Tip
           </Button>
           {error && <p className="text-[10px] text-rose-500 font-bold uppercase tracking-widest text-center mt-2">{error}</p>}
         </form>

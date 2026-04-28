@@ -1,7 +1,7 @@
 import { BriefResult, DetailedPlanResult } from './ai-service';
 
 /**
- * Generates a structured tactical brief if all AI providers fail.
+ * Generates a simple brief if all AI providers fail.
  * This ensures "Guaranteed Response" logic where the user always receives a path.
  */
 export function generateTemplateBrief(situation: string, goal: string, constraints: string): BriefResult {
@@ -9,52 +9,52 @@ export function generateTemplateBrief(situation: string, goal: string, constrain
   const shortSituation = situation.length > 100 ? situation.substring(0, 100) + "..." : situation;
 
   return {
-    summary: `Based on your situation: "${shortSituation}", you are pursuing: "${shortGoal}". This framework provides safe, balanced, and growth trajectories to navigate your current landscape.`,
+    summary: `The Bottom Line: You want to achieve: "${shortGoal}". This plan gives you three clear ways to handle your current situation: "${shortSituation}".`,
     paths: {
       safe: {
-        title: "Protocol Alpha: Preservation",
-        description: "A calculated, low-friction approach focused on solidifying your current position while making incremental gains toward your objective.",
-        pros: ["Minimal resource depletion", "high predictability", "Emotional stability"],
-        cons: ["Slower objective attainment", "Opportunity cost", "Potential for status quo bias"]
+        title: "Slow & Steady",
+        description: "6-12 months. Low risk, gradual progress while maintaining absolute stability.",
+        pros: ["minimal risk", "sustainable pace"],
+        cons: ["takes longer"]
       },
       balanced: {
-        title: "Protocol Delta: Optimization",
-        description: "The primary recommendation. This path balances strategic risk with sustainable growth, optimizing for long-term compounding effects over instant wins.",
-        pros: ["Optimal ROE (Return on Effort)", "Flexible pivot points", "Manageable stress load"],
-        cons: ["Requires disciplined trade-offs", "Potential for split focus", "Moderate risk exposure"]
+        title: "Balanced Speed",
+        description: "3-6 months. Moderate pace. Strategic risk taking with a solid fallback plan.",
+        pros: ["faster results", "managed risk"],
+        cons: ["requires higher discipline"]
       },
       growth: {
-        title: "Protocol Omega: Breakthrough",
-        description: "An asymmetric, high-velocity bet designed to bypass traditional bottlenecks by committing maximum resources to your goal's most critical lever.",
-        pros: ["Maximum impact potential", "Rapid feedback loops", "Highest ROI"],
-        cons: ["High resource intensity", "Extreme focus requirement", "Significant risk of burnout"]
+        title: "Fast Track",
+        description: "30-90 days. High growth. Aggressive moves, maximal effort, no safety net.",
+        pros: ["immediate results", "huge momentum"],
+        cons: ["high stress", "high risk"]
       }
     },
-    comparison: "The Safe path prioritizes survival and gradual build, Balanced seeks a strategic middle-ground, and Growth bets heavily on a singular high-impact objective.",
+    comparison: "Slow & Steady is about security. Balanced Speed is about balance. Fast Track is about maximum speed.",
     recommendedPath: "balanced",
     actionPlan: {
       day30: [
-        "Audit current resource allocation (time, capital, energy).",
-        "Identify and remove the single largest distraction to your objective.",
-        "Establish a weekly review cadence for tactical benchmarks."
+        "Find the one thing taking up too much of your time and stop doing it.",
+        "Set up a simple weekly check-in to see how you're doing.",
+        "Talk to one person who has already done what you want to do."
       ],
       day60: [
-        "Commit to the core lever identified in Day 30.",
-        "Systematize recurring tasks to free up cognitive bandwidth.",
-        "Seek a pressure test of your strategy from an outside expert."
+        "Focus on the most important task you found in the first month.",
+        "Create a simple system for your daily tasks to save energy.",
+        "Get feedback on your progress from someone you trust."
       ],
       day90: [
-        "Analyze progress data against initial goal projections.",
-        "Decide between scaling current momentum or a strategic pivot.",
-        "Solidify gains and establish the baseline for the next cycle."
+        "Look at your progress and decide if you need to change anything.",
+        "Celebrate how far you've come and set your next big goal.",
+        "Turn your successful actions into permanent habits."
       ]
     },
-    focusStatement: `I am committed to achieving: "${shortGoal}" through disciplined execution and strategic clarity.`
+    focusStatement: `Your Mantra: "I am moving toward '${shortGoal}' with one clear step at a time."`
   };
 }
 
 /**
- * Generates a detailed 12-week roadmap using a deterministic template when AI is busy.
+ * Generates a detailed roadmap using a simple template when AI is busy.
  */
 export function generateTemplateDetailedPlan(
   pathType: 'safe' | 'balanced' | 'growth',
@@ -64,47 +64,50 @@ export function generateTemplateDetailedPlan(
 ): DetailedPlanResult {
   const roadmap: DetailedPlanResult['roadmap'] = [];
 
-  const phases = [
-    { range: [1, 2], theme: "Foundation & System Audit" },
-    { range: [3, 4], theme: "Momentum Building & Beta Testing" },
-    { range: [5, 8], theme: "Core Execution Layer" },
-    { range: [9, 10], theme: "Optimization & Expansion" },
-    { range: [11, 12], theme: "Review & Scaling" }
-  ];
+  const timelineMap = {
+    safe: { timeline: '6-12 months', unit: 'biweek' as const, count: 12, periodName: 'Bi-week' },
+    balanced: { timeline: '3-6 months', unit: 'week' as const, count: 12, periodName: 'Week' },
+    growth: { timeline: '30-90 days', unit: 'day' as const, count: 15, periodName: 'Day' }
+  };
 
-  for (let week = 1; week <= 12; week++) {
-    const phase = phases.find(p => week >= p.range[0] && week <= p.range[1]) || phases[0];
+  const { timeline, unit, count, periodName } = timelineMap[pathType];
+
+  for (let period = 1; period <= count; period++) {
     roadmap.push({
-      week,
-      theme: phase.theme,
+      period,
+      unit,
+      theme: `Phase of ${pathType} evolution`,
       objectives: [
-        `Execute primary ${pathType} lever for week ${week}`,
-        `Audit objective alignment with: ${goal.substring(0, 30)}...`,
-        `Maintain operational constraints: ${constraints.substring(0, 30)}...`
+        `Work on your main ${pathType} task for ${periodName} ${period}`,
+        `Check if you are still on track for: ${goal.substring(0, 30)}...`,
+        `Keep in mind your limits: ${constraints.substring(0, 30)}...`
       ],
       daily: {
-        morning: "08:00 AM: Strategic deep work on core objective.",
-        afternoon: "02:00 PM: Tactical outreach and resource management.",
-        evening: "08:00 PM: Daily performance audit and Day+1 planning."
+        morning: "08:00 AM: Work on your main goal",
+        afternoon: "02:00 PM: Focus on high-impact actions",
+        evening: "08:00 PM: Review progress and plan tomorrow"
       },
-      milestone: `Verification of Week ${week} trajectory completion.`,
-      contingency: "Revert to baseline preservation protocols if performance drops below 80%."
+      milestone: `Complete everything planned for ${periodName} ${period}.`,
+      contingency: "If you get overwhelmed, go back to the simplest version of your plan."
     });
   }
 
   return {
-    summary: `This 12-week ${pathType} trajectory is engineered to achieve your goal of "${goal}" by systematically addressing the situation: "${situation.substring(0, 50)}...".`,
+    summary: `Your step-by-step plan: This ${timeline} ${pathType} plan helps you reach your goal of "${goal}" by working through your current situation.`,
+    timeline,
+    startDate: 'Now',
+    endDate: 'Strategic Completion',
     roadmap,
     rituals: [
-      "05:00 AM: Physiological priming (Exercise/Hydration)",
-      "09:00 PM: Digital blackout and cognitive recovery",
-      "Sunday 18:00: Weekly structural audit"
+      "Drink water and move your body first thing in the morning",
+      "Turn off screens an hour before bed to rest your brain",
+      "Regularly review your goal and adjust your focus"
     ],
     risks: [
-      { threat: "Burnout/Cognitive Load", mitigation: "Enforce strict work-rest cycles and digital boundaries." },
-      { threat: "Scope Creep", mitigation: "Aggressively prune non-essential tasks every 7 days." }
+      { threat: "Feeling tired or overwhelmed", mitigation: "Take small breaks and stick to your schedule." },
+      { threat: "Trying to do too much", mitigation: "Focus only on the most important tasks." }
     ],
-    resources: ["Focused time (4 hours/day)", "Strategic support network", "Existence Brief Dashboard"],
-    accountability: "Weekly progress log reviewed against pre-defined KPIs."
+    resources: ["Focused time", "Helpful mentors", "Existence Brief Dashboard"],
+    accountability: "Keep a simple log of what you did."
   };
 }

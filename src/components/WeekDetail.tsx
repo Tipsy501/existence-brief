@@ -1,13 +1,14 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Calendar, Target, ShieldAlert, CheckCircle2, ArrowRight } from 'lucide-react';
+import { motion } from 'motion/react';
+import { Calendar, Target, ShieldAlert, CheckCircle2 } from 'lucide-react';
 import Card from './Card';
 
 interface WeekDetailProps {
-  week: number;
+  period: number;
+  unit: 'day' | 'week' | 'biweek';
   theme: string;
   objectives: string[];
-  daily: {
+  daily?: {
     morning: string;
     afternoon: string;
     evening: string;
@@ -18,7 +19,8 @@ interface WeekDetailProps {
 }
 
 export default function WeekDetail({
-  week,
+  period,
+  unit,
   theme,
   objectives,
   daily,
@@ -34,11 +36,20 @@ export default function WeekDetail({
 
   const accentClass = accents[type];
 
-  const days = [
+  const getLabel = () => {
+    switch (unit) {
+      case 'day': return `Day ${period}`;
+      case 'biweek': return `Bi-week ${period}`;
+      case 'week':
+      default: return `Week ${period}`;
+    }
+  };
+
+  const days = daily ? [
     { label: 'Morning', value: daily.morning, time: '08:00 AM' },
     { label: 'Afternoon', value: daily.afternoon, time: '02:00 PM' },
     { label: 'Evening', value: daily.evening, time: '08:00 PM' }
-  ];
+  ] : [];
 
   return (
     <motion.div
@@ -50,7 +61,7 @@ export default function WeekDetail({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-bold uppercase tracking-widest mb-3 ${accentClass}`}>
-            Phase {Math.ceil(week / 2)} • Week {week}
+            {getLabel()} • {type === 'safe' ? 'Safe' : type === 'balanced' ? 'Balanced' : 'High Growth'}
           </div>
           <h2 className="text-2xl font-black text-slate-900 leading-tight">
             {theme}
@@ -63,7 +74,7 @@ export default function WeekDetail({
         <Card padding="md" className="border-slate-100">
           <div className="flex items-center gap-2 mb-4 text-slate-400">
             <Target size={18} />
-            <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Primary Objectives</span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Your objectives</span>
           </div>
           <ul className="space-y-4">
             {objectives.map((obj, i) => (
@@ -76,25 +87,27 @@ export default function WeekDetail({
         </Card>
 
         {/* Daily Ritual */}
-        <Card padding="md" className="border-slate-100">
-          <div className="flex items-center gap-2 mb-4 text-slate-400">
-            <Calendar size={18} />
-            <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Command Schedule</span>
-          </div>
-          <div className="space-y-4">
-            {days.map((day, i) => (
-              <div key={i} className="flex items-start gap-4 p-3 rounded-xl hover:bg-slate-50 transition-colors">
-                <div className="text-[10px] font-black text-slate-400 w-16 pt-1 tracking-tighter uppercase whitespace-nowrap">
-                  {day.time}
+        {daily && (
+          <Card padding="md" className="border-slate-100">
+            <div className="flex items-center gap-2 mb-4 text-slate-400">
+              <Calendar size={18} />
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Your {unit === 'day' ? 'Today\'s' : 'Daily'} tasks</span>
+            </div>
+            <div className="space-y-4">
+              {days.map((day, i) => (
+                <div key={i} className="flex items-start gap-4 p-3 rounded-xl hover:bg-slate-50 transition-colors">
+                  <div className="text-[10px] font-black text-slate-400 w-16 pt-1 tracking-tighter uppercase whitespace-nowrap">
+                    {day.time}
+                  </div>
+                  <div>
+                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">{day.label}</div>
+                    <div className="text-sm text-slate-900 font-medium leading-tight">{day.value}</div>
+                  </div>
                 </div>
-                <div>
-                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">{day.label}</div>
-                  <div className="text-sm text-slate-900 font-medium leading-tight">{day.value}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </Card>
+              ))}
+            </div>
+          </Card>
+        )}
       </div>
 
       {/* Milestone & Contingency */}

@@ -101,12 +101,11 @@ export default function Pricing() {
 
                 <div className="relative z-10 space-y-4 mb-10 flex-1">
                   {[
-                    "Unlimited High-Depth Briefs",
-                    "Priority Execution Intelligence",
-                    "Private Strategy Vault",
-                    "White-label PDF Archive",
-                    "Precision Strategy Support",
-                    "Exclusive Early-Beta Access"
+                    "Make as many plans as you want",
+                    "All your plans saved securely",
+                    "Download your plan as PDF",
+                    "Email us anytime",
+                    "Get new features first"
                   ].map((f, i) => (
                     <div key={i} className="flex items-center gap-3 text-sm font-bold text-slate-900 transition-transform group">
                       <div className="w-5 h-5 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0 border border-indigo-200">
@@ -153,19 +152,19 @@ export default function Pricing() {
               {[
                 { 
                   q: "Lifetime actually means lifetime?", 
-                  a: "Precisely. A single investment grants you access to every tactical update, model improvement, and new strategic feature we release, forever." 
+                  a: "Yes. Pay once, use it forever. You get all future updates and features for free." 
                 },
                 { 
-                  q: "How does the PDF export work?", 
-                  a: "Premium users can generate 5-page professional reports of their analysis, formatted for immediate presentation to execution teams or boards." 
+                  q: "Is there a money-back guarantee?", 
+                  a: "Absolutely. If you don't find value in your first 30 days, email us at topogabolekwe@gmail.com and we'll refund you. No questions asked." 
                 },
                 { 
-                  q: "What support do I get?", 
-                  a: "Premium strategists get priority access to our support engine for assistance with complex briefings or platform feature requests." 
+                  q: "How many briefs can I make?", 
+                  a: "The free tier allows 3 briefs per day. Premium users get unlimited access — generate as many plans as you need to find the right path." 
                 },
                 { 
-                  q: "Is there a daily limit?", 
-                  a: "Standard users have a strict daily reset. Premium access removes all artificial constraints, allowing unlimited strategic iterations." 
+                  q: "Who is this for?", 
+                  a: "Anyone at a crossroads — whether you're looking to change careers, start a business, or just get more organized with your goals." 
                 }
               ].map((faq, i) => (
                 <div key={i} className="space-y-3">

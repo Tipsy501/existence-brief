@@ -67,7 +67,7 @@ export default function Login() {
       navigate('/dashboard');
     } catch (err: any) {
       console.log('Auth interaction deviation:', err);
-      setAuthError('Authentication sequence interrupted. Please verify credentials and retry.');
+      setAuthError('Something went wrong. Try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -164,16 +164,16 @@ export default function Login() {
               </div>
 
               <Button type="submit" fullWidth loading={isSubmitting} className="py-4 text-sm uppercase tracking-widest font-bold">
-                Sign in
+                Log In
                 {!isSubmitting && <LogIn size={18} className="ml-2" />}
               </Button>
             </form>
           </div>
 
           <div className="bg-slate-50 p-6 text-center border-t border-slate-100">
-            <span className="text-sm text-slate-500">New to platform?</span>{' '}
+            <span className="text-sm text-slate-500">New around here?</span>{' '}
             <Link to="/signup" className="text-sm font-bold text-indigo-600 hover:text-indigo-700 transition-colors">
-              Create tactical account
+              Sign Up
             </Link>
           </div>
         </Card>

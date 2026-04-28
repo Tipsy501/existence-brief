@@ -25,6 +25,10 @@ import ShareBrief from '../components/ShareBrief';
 import AdBanner from '../components/AdBanner';
 import SocialShare from '../components/SocialShare';
 import PDFExport from '../components/PDFExport';
+import FeedbackModal from '../components/FeedbackModal';
+
+const FEEDBACK_KEY = 'existence_feedback_submitted';
+const FEEDBACK_SHOWN_KEY = 'existence_feedback_shown';
 
 export default function BriefResult() {
   const navigate = useNavigate();
@@ -36,10 +40,27 @@ export default function BriefResult() {
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(!!location.state?.briefId);
   const [briefId, setBriefId] = useState<string | null>(location.state?.briefId || null);
+  const [showFeedback, setShowFeedback] = useState(false);
 
   // Prefer result from location state, fallback to hook (localStorage)
   const result = location.state?.result || rawResult;
   const inputs = location.state?.inputs;
+
+  useEffect(() => {
+    // Only show feedback after successful brief generation if not submitted and not shown
+    const hasSubmitted = localStorage.getItem(FEEDBACK_KEY);
+    const hasBeenShown = localStorage.getItem(FEEDBACK_SHOWN_KEY);
+    
+    if (result && !hasSubmitted && !hasBeenShown) {
+      // Delay 10 seconds after page load
+      const timer = setTimeout(() => {
+        setShowFeedback(true);
+        localStorage.setItem(FEEDBACK_SHOWN_KEY, 'true');
+      }, 10000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [result]);
 
   useEffect(() => {
     if (!result) {
@@ -137,10 +158,10 @@ CONFIDENTIAL ANALYSIS - EXISTENCE BRIEF
                     <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
                       <Zap size={18} />
                     </div>
-                    <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-slate-400">Executive Summary</span>
+                    <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-slate-400">The Bottom Line</span>
                   </div>
                   <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-6 leading-tight tracking-tight">
-                    Your Clarity Roadmap
+                    Your 3 Paths
                   </h1>
                   <p className="text-lg md:text-xl text-slate-600 leading-relaxed font-medium">
                     {result.summary}
@@ -152,7 +173,10 @@ CONFIDENTIAL ANALYSIS - EXISTENCE BRIEF
                     <Target size={24} />
                   </div>
                   <span className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Recommended Approach</span>
-                  <div className="text-xl font-bold text-slate-900 capitalize mb-4">{result.recommendedPath} Path</div>
+                  <div className="text-xl font-bold text-slate-900 capitalize mb-1">{result.recommendedPath} Path</div>
+                  <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">
+                    {result.recommendedPath === 'safe' ? '6-12 Months' : result.recommendedPath === 'balanced' ? '3-6 Months' : '30-90 Days'}
+                  </div>
                   <Button size="sm" fullWidth onClick={() => {
                     const el = document.getElementById('action-plan');
                     el?.scrollIntoView({ behavior: 'smooth' });
@@ -169,10 +193,10 @@ CONFIDENTIAL ANALYSIS - EXISTENCE BRIEF
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-3">
                 <LayoutGrid size={20} className="text-indigo-600" />
-                <h2 className="text-xl font-bold text-slate-900 uppercase tracking-widest text-sm">Strategic Trajectories</h2>
+                <h2 className="text-xl font-bold text-slate-900 uppercase tracking-widest text-sm">Your 3 Paths</h2>
               </div>
               <span className="hidden md:block text-[10px] font-bold text-indigo-500 uppercase tracking-widest animate-pulse">
-                Click any path to view detailed 12-week roadmap
+                Click any path to view your detailed plan
               </span>
             </div>
 
@@ -217,17 +241,17 @@ CONFIDENTIAL ANALYSIS - EXISTENCE BRIEF
             
             <ActionPlan plan={result.actionPlan} />
 
-            <AdBanner type="content" />
+            <AdBanner position="result-action-plan" />
           </section>
 
-          {/* North Star */}
+          {/* Your Mantra */}
           <section className="py-12">
             <div className="max-w-2xl mx-auto text-center relative px-6">
               <Quote size={64} className="absolute -top-6 -left-4 text-indigo-50 opacity-50 -z-10" />
               <Quote size={64} className="absolute -bottom-6 -right-4 text-indigo-50 opacity-50 rotate-180 -z-10" />
               
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 text-[10px] font-bold uppercase tracking-widest mb-8">
-                North Star Focus
+                Your Mantra
               </div>
               
               <h3 className="text-2xl md:text-3xl font-bold text-slate-900 leading-tight italic">
@@ -291,6 +315,7 @@ CONFIDENTIAL ANALYSIS - EXISTENCE BRIEF
           </section>
         </div>
       </div>
+      <FeedbackModal isOpen={showFeedback} onClose={() => setShowFeedback(false)} />
     </div>
   );
 }

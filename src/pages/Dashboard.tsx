@@ -170,6 +170,8 @@ export default function Dashboard() {
           </Card>
         </div>
 
+        <AdBanner position="dashboard-stats" />
+
         {/* Gamification Area */}
         <BadgeDisplay />
 
@@ -237,7 +239,7 @@ export default function Dashboard() {
           </div>
 
           <div className="flex flex-col gap-6">
-            <AdBanner type="sidebar" className="hidden lg:block my-0" />
+            <AdBanner position="sidebar" className="hidden lg:block my-0" />
             
             {isPremium && (
               <Card className="bg-slate-900 border-none relative overflow-hidden group p-6">

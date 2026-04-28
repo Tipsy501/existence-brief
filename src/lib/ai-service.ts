@@ -29,10 +29,11 @@ export interface BriefResult {
 export interface DetailedPlanResult {
   summary: string;
   roadmap: Array<{
-    week: number;
+    period: number;
+    unit: 'day' | 'week' | 'biweek';
     theme: string;
     objectives: string[];
-    daily: {
+    daily?: {
       morning: string;
       afternoon: string;
       evening: string;
@@ -44,6 +45,9 @@ export interface DetailedPlanResult {
   risks: Array<{ threat: string; mitigation: string }>;
   resources: string[];
   accountability: string;
+  timeline: string;
+  startDate: string;
+  endDate: string;
 }
 
 interface PathDefinition {
@@ -82,8 +86,15 @@ export async function generateDetailedPlan(
   // Add random seed to force different output each time
   const uniqueSeed = Date.now();
   
+  const timelineMap = {
+    safe: '6-12 months',
+    balanced: '3-6 months',
+    growth: '30-90 days'
+  };
+
   const prompt = EXISTENCE_DETAILED_PLAN_PROMPT
     .replace('{pathType}', pathType)
+    .replace('{timeline}', timelineMap[pathType])
     .replace('{situation}', situation)
     .replace('{goal}', goal)
     .replace('{constraints}', constraints || 'None provided')

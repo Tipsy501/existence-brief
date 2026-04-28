@@ -50,7 +50,7 @@ export default function Signup() {
       setSuccess(true);
     } catch (err: any) {
       console.log('Signup protocol deviation:', err);
-      setError('Strategic clearance sequence interrupted. Please verify credentials and retry.');
+      setError('Something went wrong. Try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -99,7 +99,7 @@ export default function Signup() {
                 <div className="bg-indigo-600 p-2 rounded-lg text-white">
                   <Zap size={20} className="fill-white" />
                 </div>
-                <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Create Account</h1>
+                <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Sign Up</h1>
               </div>
               <p className="text-slate-500 text-sm">Join the top tier of high-performers today.</p>
             </div>
@@ -200,7 +200,7 @@ export default function Signup() {
                 loading={isSubmitting}
                 className="py-4 text-sm uppercase tracking-widest font-bold mt-2"
               >
-                Create Account
+                Sign Up
                 {!isSubmitting && <UserPlus size={18} className="ml-2" />}
               </Button>
             </form>

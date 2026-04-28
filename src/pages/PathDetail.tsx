@@ -33,7 +33,7 @@ export default function PathDetail() {
   const [plan, setPlan] = useState<DetailedPlanResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState<'loading' | 'processing' | 'finishing'>('loading');
-  const [activeWeek, setActiveWeek] = useState(1);
+  const [activePeriod, setActivePeriod] = useState(1);
   const [isNewGeneration, setIsNewGeneration] = useState(false);
   const [briefContext, setBriefContext] = useState<any>(null);
 
@@ -160,15 +160,21 @@ export default function PathDetail() {
   };
 
   if (loading) {
+    const timelineMap = {
+      safe: '6-12 Month Steady',
+      balanced: '3-6 Month Balanced',
+      growth: '30-90 Day Aggressive'
+    };
+    
     return (
       <div className="flex-1 bg-white flex flex-col items-center justify-center p-6 text-center">
         <LoadingSpinner 
           size="lg" 
-          text={status === 'loading' ? 'Analyzing Strategic Context...' : status === 'processing' ? `Engineering 12-Week ${pathType?.toUpperCase()} Trajectory...` : 'Finalizing Roadmap Components...'} 
+          text={status === 'loading' ? 'Analyzing Strategic Context...' : status === 'processing' ? `Engineering ${timelineMap[pathType || 'balanced']} Trajectory...` : 'Finalizing Roadmap Components...'} 
         />
         <div className="mt-8 flex flex-col items-center gap-2 max-w-sm">
           <p className="text-slate-400 text-sm font-medium leading-relaxed">
-            Our multi-provider grid is synthesizing tactical beats and week-by-week milestones for your specific objective.
+            Our multi-provider grid is synthesizing tactical beats and tailored milestones for your specific objective.
           </p>
         </div>
       </div>
@@ -188,7 +194,8 @@ export default function PathDetail() {
     );
   }
 
-  const activeWeekData = plan.roadmap.find(w => w.week === activeWeek) || plan.roadmap[0];
+  const activePeriodData = plan.roadmap.find(w => w.period === activePeriod) || plan.roadmap[0];
+  const unit = activePeriodData?.unit || 'week';
 
   return (
     <div className="flex-1 bg-slate-50 py-12 md:py-20">
@@ -202,7 +209,7 @@ export default function PathDetail() {
             <ArrowLeft size={16} /> Back to Strategic Paths
           </button>
           <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-            <Clock size={14} /> 12-WEEK PRECISION ENGINE
+            <Clock size={14} /> PRECISION {unit.toUpperCase()} ENGINE
           </div>
         </div>
 
@@ -216,11 +223,23 @@ export default function PathDetail() {
                     <div className={`p-2 rounded-lg ${pathType === 'safe' ? 'bg-emerald-50 text-emerald-600' : pathType === 'balanced' ? 'bg-indigo-50 text-indigo-600' : 'bg-amber-50 text-amber-600'}`}>
                       {pathType === 'safe' ? <Zap size={20} /> : pathType === 'balanced' ? <TrendingUp size={20} /> : <Target size={20} />}
                     </div>
-                    <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-slate-400">{pathType} trajectory detail</span>
+                    <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-slate-400">
+                      Your {pathType === 'safe' ? 'Slow & Steady' : pathType === 'balanced' ? 'Balanced Speed' : 'Fast Track'} Path
+                    </span>
                   </div>
-                  <h1 className="text-3xl md:text-4xl font-black text-slate-900 mb-4 leading-tight tracking-tighter">
-                    Tactical 12-Week Roadmap
+                  <h1 className="text-3xl md:text-4xl font-black text-slate-900 mb-2 leading-tight tracking-tighter">
+                    Your step-by-step plan
                   </h1>
+                  
+                  <div className="flex items-center gap-4 mb-4">
+                    <span className="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded">
+                      Timeline: {plan.timeline}
+                    </span>
+                    <span className="text-xs font-medium text-slate-400">
+                      {plan.startDate} → {plan.endDate}
+                    </span>
+                  </div>
+
                   {briefContext?.goal && (
                     <div className="mb-4 inline-flex items-center gap-2 px-3 py-1 bg-slate-900 text-white rounded-full text-[10px] font-bold uppercase tracking-widest">
                       <Target size={12} className="text-indigo-400" /> Based on goal: {briefContext.goal}
@@ -231,7 +250,7 @@ export default function PathDetail() {
                   </p>
                   
                   <div className="mt-6 flex flex-wrap items-center gap-4">
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg border border-emerald-100 text-[10px] font-black uppercase tracking-widest animate-pulse">
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg border border-emerald-100 text-[10px] font-black uppercase tracking-widest">
                       <CheckCircle2 size={12} /> Plan generated uniquely for you
                     </div>
                     <button 
@@ -254,17 +273,22 @@ export default function PathDetail() {
                 <h2 className="text-sm font-bold text-slate-900 uppercase tracking-[0.2em]">Deployment Timeline</h2>
               </div>
               <div className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">
-                Week {activeWeek} of 12
+                {unit === 'day' ? 'Day' : unit === 'biweek' ? 'Bi-week' : 'Week'} {activePeriod} of {plan.roadmap.length}
               </div>
             </div>
 
-            <Timeline currentWeek={activeWeek} onWeekClick={setActiveWeek} />
+            <Timeline 
+              currentPeriod={activePeriod} 
+              onPeriodClick={setActivePeriod} 
+              periodsCount={plan.roadmap.length}
+              unit={unit}
+            />
 
             <div className="mt-12 pt-12 border-t border-slate-50">
               <AnimatePresence mode="wait">
                 <WeekDetail 
-                  key={activeWeek}
-                  {...activeWeekData}
+                  key={activePeriod}
+                  {...activePeriodData}
                   type={pathType}
                 />
               </AnimatePresence>
@@ -334,7 +358,7 @@ export default function PathDetail() {
                 "{plan.accountability}"
               </p>
               <p className="text-[10px] text-slate-400 uppercase tracking-widest leading-relaxed">
-                Objective verification requirement for 12-week protocol integrity.
+                Objective verification requirement for strategic protocol integrity.
               </p>
             </Card>
           </section>
