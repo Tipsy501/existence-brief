@@ -9,6 +9,7 @@ import Button from '../components/Button';
 import LoadingSpinner from '../components/LoadingSpinner';
 import SEOMeta from '../components/SEOMeta';
 import RelatedBriefs from '../components/RelatedBriefs';
+import AdBanner from '../components/AdBanner';
 
 export default function PublicBrief() {
   const { briefId } = useParams();
@@ -171,6 +172,10 @@ export default function PublicBrief() {
         </section>
 
         <RelatedBriefs />
+        
+        <div className="mt-12 flex justify-center">
+          <AdBanner position="public-footer" size="medium-rectangle" />
+        </div>
       </div>
     </div>
   </>

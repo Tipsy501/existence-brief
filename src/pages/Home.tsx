@@ -84,7 +84,7 @@ export default function Home() {
       </section>
       
       <div className="container-max">
-        <AdBanner position="hero" />
+        <AdBanner position="hero" size="leaderboard" />
       </div>
 
       {/* Social Proof / Risk Reversal */}
@@ -234,7 +234,7 @@ export default function Home() {
       </section>
 
       <div className="container-max">
-        <AdBanner position="content" />
+        <AdBanner position="content" size="banner" />
       </div>
 
       {/* Founder Story */}

@@ -47,7 +47,7 @@ export default function App() {
           <ScrollToTop />
           <Layout>
             <div className="container-max mt-4">
-              <AdBanner position="top" className="my-0" />
+              <AdBanner position="top" size="leaderboard" className="my-0" />
             </div>
             <Routes>
             <Route path="/" element={<Home />} />

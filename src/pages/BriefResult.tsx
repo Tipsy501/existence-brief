@@ -241,7 +241,7 @@ CONFIDENTIAL ANALYSIS - EXISTENCE BRIEF
             
             <ActionPlan plan={result.actionPlan} />
 
-            <AdBanner position="result-action-plan" />
+            <AdBanner position="result-action-plan" size="medium-rectangle" />
           </section>
 
           {/* Your Mantra */}

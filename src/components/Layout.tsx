@@ -7,6 +7,7 @@ import UserMenu from './UserMenu';
 import ErrorBoundary from './ErrorBoundary';
 import CookieBanner from './CookieBanner';
 import SocialShare from './SocialShare';
+import AdBanner from './AdBanner';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -137,6 +138,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       {/* Footer */}
       <footer className="py-20 px-4 border-t border-slate-100 bg-white">
+        <div className="container-max mb-16">
+          <AdBanner position="footer" size="leaderboard" className="mt-0" />
+        </div>
         <div className="container-max grid gap-12 md:grid-cols-2 lg:grid-cols-4">
           <div className="col-span-1 md:col-span-2 space-y-4">
             <Link to="/" className="flex items-center gap-2.5">
