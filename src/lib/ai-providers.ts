@@ -14,9 +14,9 @@ export const PROVIDERS: AIProvider[] = [
     name: 'OpenRouter',
     url: 'https://openrouter.ai/api/v1/chat/completions',
     models: [
-      'google/gemini-2.0-flash-exp:free',
-      'deepseek/deepseek-chat-v3-0324:free',
-      'meta-llama/llama-3.1-8b-instruct:free'
+      'meta-llama/llama-3.1-8b-instruct:free',
+      'mistralai/mistral-7b-instruct:free',
+      'google/gemma-2-9b-it:free'
     ],
     key: import.meta.env.VITE_OPENROUTER_API_KEY,
     type: 'openai'

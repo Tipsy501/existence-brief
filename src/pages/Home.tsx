@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronRight, Target, Brain, ArrowUpRight, CheckCircle2, Star, Users, ArrowLeft, ArrowRight, Quote } from 'lucide-react';
+import { ChevronRight, Target, Brain, ArrowUpRight, CheckCircle2, Star, Users, ArrowLeft, ArrowRight, Quote, GitBranch, Calendar, Shield } from 'lucide-react';
 import Button from '../components/Button';
 import Card from '../components/Card';
 import AdBanner from '../components/AdBanner';
@@ -86,6 +86,28 @@ export default function Home() {
       <div className="container-max">
         <AdBanner position="hero" size="leaderboard" />
       </div>
+
+      {/* Honest Stats Section */}
+      <section className="py-12 bg-white">
+        <div className="container-max">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+            {[
+              { icon: <Brain className="text-indigo-600" size={24} />, label: "AI-Powered Analysis", desc: "Multiple models working for you" },
+              { icon: <GitBranch className="text-indigo-600" size={24} />, label: "3 Strategic Paths", desc: "Safe, balanced, or high growth" },
+              { icon: <Calendar className="text-indigo-600" size={24} />, label: "90-Day Action Plan", desc: "Week-by-week execution roadmap" },
+              { icon: <Shield className="text-indigo-600" size={24} />, label: "Privacy First", desc: "Your data stays yours" }
+            ].map((stat, i) => (
+              <div key={i} className="flex flex-col items-center text-center p-6 rounded-2xl bg-slate-50 border border-slate-100 group hover:border-indigo-100 hover:bg-white hover:shadow-xl hover:shadow-indigo-500/5 transition-all duration-300">
+                <div className="mb-4 p-3 bg-white rounded-xl shadow-sm group-hover:scale-110 transition-transform duration-300">
+                  {stat.icon}
+                </div>
+                <h4 className="font-bold text-slate-900 text-sm mb-1">{stat.label}</h4>
+                <p className="text-slate-500 text-xs leading-relaxed">{stat.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Social Proof / Risk Reversal */}
       <section className="py-20 bg-white border-y border-slate-100">
